@@ -4,24 +4,16 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class DriverFactory {
 
     public static WebDriver createDriver() {
 
         ChromeOptions options = new ChromeOptions();
 
-        // Separate Chrome profile.
-        Path seleniumProfile = Paths.get(
-                System.getProperty("user.home"),
-                "selenium-profiles",
-                "swap-share"
-        );
-
-        options.addArguments(
-                "--user-data-dir=" + seleniumProfile.toString()
+        // Connect to the Chrome instance started manually
+        options.setExperimentalOption(
+                "debuggerAddress",
+                "127.0.0.1:9222"
         );
 
         return new ChromeDriver(options);
