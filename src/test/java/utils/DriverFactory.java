@@ -6,16 +6,22 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 public class DriverFactory {
 
+    private DriverFactory() {
+    }
+
     public static WebDriver createDriver() {
 
         ChromeOptions options = new ChromeOptions();
 
-        // Connect to the Chrome instance started manually
-        options.setExperimentalOption(
-                "debuggerAddress",
-                "127.0.0.1:9222"
-        );
+        options.addArguments("--start-maximized");
 
         return new ChromeDriver(options);
+    }
+
+    public static void quitDriver(WebDriver driver) {
+
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }
