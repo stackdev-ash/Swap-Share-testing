@@ -1,27 +1,22 @@
 package utils;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 
 public class TestBase {
 
     protected WebDriver driver;
     protected TestHelper helper;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() {
-
-        driver =
-                DriverFactory.createDriver();
-
-        helper =
-                new TestHelper(driver);
+        driver = DriverFactory.createDriver();
+        helper = new TestHelper(driver);
     }
 
-    @AfterMethod
+    @AfterClass
     public void tearDown() {
-
         DriverFactory.quitDriver(driver);
     }
 }

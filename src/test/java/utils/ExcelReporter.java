@@ -9,24 +9,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class ExcelReporter {
-
-    private static final String FILE =
-            TestConfig.EXCEL_FILE;
-
-    private static final String SHEET =
-            "Test Results";
-
-
-    public static void saveResult(
+    private static final String FILE = TestConfig.EXCEL_FILE;
+    private static final String SHEET = "Test Results";
+    
+    public static synchronized void saveResult(
             String testCaseId,
             String scenario,
             String expected,
             String actual,
-            String status
-    ) {
+            String status) {
 
         File file = new File(FILE);
-
         File parent = file.getParentFile();
 
         if (parent != null && !parent.exists()) {
@@ -36,99 +29,55 @@ public class ExcelReporter {
         Workbook workbook = null;
 
         try {
-
             if (file.exists()) {
-
-                FileInputStream input =
-                        new FileInputStream(file);
-
-                workbook = new XSSFWorkbook(input);
-
-                input.close();
-
+                try (FileInputStream input = new FileInputStream(file)) {
+                    workbook = new XSSFWorkbook(input);
+                }
             } else {
-
                 workbook = new XSSFWorkbook();
             }
 
-
-            Sheet sheet =
-                    workbook.getSheet(SHEET);
+            Sheet sheet = workbook.getSheet(SHEET);
 
             if (sheet == null) {
-
-                sheet =
-                        workbook.createSheet(SHEET);
-
+                sheet = workbook.createSheet(SHEET);
                 createHeader(sheet);
             }
+            int nextRow = sheet.getLastRowNum() + 1;
 
+            Row row = sheet.createRow(nextRow);
 
-            // Find existing test case row
-            int existingRow =
-                    findTestCaseRow(sheet, testCaseId);
+            row.createCell(0).setCellValue(testCaseId);
+            row.createCell(1).setCellValue(scenario);
+            row.createCell(2).setCellValue(expected);
+            row.createCell(3).setCellValue(actual);
+            row.createCell(4).setCellValue(status);
+            row.createCell(5).setCellValue(
+                    java.time.LocalDateTime.now().toString()
+            );
 
-            Row row;
-
-            if (existingRow != -1) {
-
-                row = sheet.getRow(existingRow);
-
-            } else {
-
-                row = sheet.createRow(
-                        sheet.getLastRowNum() + 1
-                );
+            try (FileOutputStream output = new FileOutputStream(file)) {
+                workbook.write(output);
             }
-
-
-            row.createCell(0)
-                    .setCellValue(testCaseId);
-
-            row.createCell(1)
-                    .setCellValue(scenario);
-
-            row.createCell(2)
-                    .setCellValue(expected);
-
-            row.createCell(3)
-                    .setCellValue(actual);
-
-            row.createCell(4)
-                    .setCellValue(status);
-
-            row.createCell(5)
-                    .setCellValue(
-                            java.time.LocalDateTime.now()
-                                    .toString()
-                    );
-
-
-            FileOutputStream output =
-                    new FileOutputStream(file);
-
-            workbook.write(output);
-
-            output.close();
 
             workbook.close();
 
         } catch (IOException e) {
+            if (workbook != null) {
+                try {
+                    workbook.close();
+                } catch (IOException ignored) {
+                }
+            }
 
             throw new RuntimeException(
-                    "Failed to write Excel report.",
-                    e
+                    "Failed to write Excel report.", e
             );
         }
     }
 
-
-    private static void createHeader(
-            Sheet sheet
-    ) {
-
-        Row header =
-                sheet.createRow(0);
+    private static void createHeader(Sheet sheet) {
+        Row header = sheet.createRow(0);
 
         String[] headers = {
                 "Test Case ID",
@@ -139,44 +88,8 @@ public class ExcelReporter {
                 "Execution Date"
         };
 
-
         for (int i = 0; i < headers.length; i++) {
-
-            header.createCell(i)
-                    .setCellValue(headers[i]);
+            header.createCell(i).setCellValue(headers[i]);
         }
-    }
-
-
-    private static int findTestCaseRow(
-            Sheet sheet,
-            String testCaseId
-    ) {
-
-        for (
-                int i = 1;
-                i <= sheet.getLastRowNum();
-                i++
-        ) {
-
-            Row row = sheet.getRow(i);
-
-            if (row == null) {
-                continue;
-            }
-
-            Cell cell = row.getCell(0);
-
-            if (
-                    cell != null
-                    && cell.getStringCellValue()
-                            .equals(testCaseId)
-            ) {
-
-                return i;
-            }
-        }
-
-        return -1;
     }
 }
