@@ -1,6 +1,7 @@
 package utils;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -12,7 +13,6 @@ public class TestHelper {
 
 
     public TestHelper(WebDriver driver) {
-
         this.driver = driver;
     }
 
@@ -51,9 +51,21 @@ public class TestHelper {
 
 
     public void click(By locator) {
+    WebElement element = find(locator);
 
-        find(locator).click();
+    ((JavascriptExecutor) driver).executeScript(
+        "arguments[0].scrollIntoView({block: 'center', inline: 'center'});",
+        element
+    );
+
+    try {
+        Thread.sleep(300);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
     }
+
+    element.click();
+}
 
 
     public void type(
