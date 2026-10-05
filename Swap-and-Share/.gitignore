@@ -1,0 +1,59 @@
+# =========================
+# Node.js / Backend
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+.env
+.env.local
+.env.*.local
+
+# =========================
+# React / Frontend
+# =========================
+/build
+/dist
+/.parcel-cache
+/.next
+/.cache
+*.tsbuildinfo
+
+# =========================
+# Logs
+# =========================
+logs
+*.log
+*.log.*
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# =========================
+# Databases (local only)
+# =========================
+*.sqlite
+*.db
+*.sql
+*.sqlite3
+pgdata/
+mysql/
+data/
+
+# =========================
+# OS / Editor files
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# Testing
+# =========================
+coverage/
+.nyc_output/
