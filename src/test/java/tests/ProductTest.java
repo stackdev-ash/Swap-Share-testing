@@ -94,7 +94,7 @@ public class ProductTest extends TestBase {
                     By.xpath(".//button[normalize-space()='Add to Cart']"));
 
             Assert.assertFalse(name.isBlank(), "Product name is missing.");
-            Assert.assertTrue(details.contains("₹"), "Product price is missing.");
+            Assert.assertTrue(details.contains("â‚¹"), "Product price is missing.");
             Assert.assertFalse(details.trim().isBlank(), "Product details are missing.");
             Assert.assertTrue(addButton.isDisplayed(), "Add to Cart button is not displayed.");
 
@@ -279,7 +279,60 @@ public void removeProductFromCart() {
         throw e;
     }
 }
-    TC-PROD-005
+    @Test
+    public void productInformationIsDisplayed() {
+        String id = "TC-PROD-006";
+        String scenario = "Verify product information is displayed";
+        String expected = "Product card should display product name and essential information.";
+
+        try {
+            loginUsingTestAccount();
+
+            helper.open(TestConfig.APP_URL + "/shop");
+            helper.waitForElement(Locators.SHOP_HEADING, 10);
+
+            List<WebElement> products =
+                    driver.findElements(Locators.PRODUCT_CARDS);
+
+            Assert.assertFalse(
+                    products.isEmpty(),
+                    "No products are available on the shop page."
+            );
+
+            WebElement product = products.get(0);
+
+            WebElement productName =
+                    product.findElement(By.tagName("h3"));
+
+            Assert.assertTrue(
+                    productName.isDisplayed(),
+                    "Product name is not displayed."
+            );
+
+            Assert.assertFalse(
+                    productName.getText().trim().isEmpty(),
+                    "Product name is empty."
+            );
+
+            ExcelReporter.saveResult(
+                    id,
+                    scenario,
+                    expected,
+                    "Product information was displayed successfully.",
+                    "PASS"
+            );
+
+        } catch (AssertionError | RuntimeException e) {
+            ExcelReporter.saveResult(
+                    id,
+                    scenario,
+                    expected,
+                    e.getMessage(),
+                    "FAIL"
+            );
+            throw e;
+        }
+    }
     private void loginUsingTestAccount() {
         helper.open(TestConfig.APP_URL);
 
@@ -342,3 +395,5 @@ public void removeProductFromCart() {
         helper.waitForElement(Locators.LOGOUT_BUTTON, 10);
     }
 }
+
+
