@@ -176,7 +176,109 @@ public class ProductTest extends TestBase {
             throw e;
         }
     }
+@Test
+public void removeProductFromCart() {
+    String id = "TC-PROD-004";
+    String scenario = "Remove an added product from the shopping cart";
+    String expected = "Authenticated user should be able to remove a product from the cart.";
 
+    try {
+        loginUsingTestAccount();
+
+        helper.open(TestConfig.APP_URL + "/shop");
+        helper.waitForElement(Locators.SHOP_HEADING, 10);
+
+        List<WebElement> products = driver.findElements(Locators.PRODUCT_CARDS);
+
+        Assert.assertFalse(
+                products.isEmpty(),
+                "No product is available for the remove-from-cart test."
+        );
+
+        WebElement product = products.get(0);
+
+        String productName =
+                product.findElement(By.tagName("h3")).getText().trim();
+
+        product.findElement(
+                By.xpath(".//button[normalize-space()='Add to Cart']")
+        ).click();
+
+        WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        Alert alert =
+                wait.until(ExpectedConditions.alertIsPresent());
+
+        String alertText = alert.getText();
+
+        Assert.assertEquals(
+                alertText,
+                "Added to cart successfully!"
+        );
+
+        alert.accept();
+
+        helper.open(TestConfig.APP_URL + "/cart");
+        helper.waitForElement(Locators.CART_HEADING, 10);
+
+        By removeButton = By.xpath(
+                "//div[.//h3[normalize-space()='" + productName + "']]"
+                        + "//button[normalize-space()='Remove']"
+        );
+
+        WebElement remove =
+                driver.findElement(removeButton);
+
+        Assert.assertTrue(
+                remove.isDisplayed(),
+                "Remove button is not displayed for the added product."
+        );
+
+        remove.click();
+
+        wait.until(
+                ExpectedConditions.invisibilityOfElementLocated(removeButton)
+        );
+
+        List<WebElement> remainingItems =
+                driver.findElements(Locators.CART_ITEM_NAMES);
+
+        boolean found = false;
+
+        for (WebElement item : remainingItems) {
+            if (item.getText().trim().equals(productName)) {
+                found = true;
+                break;
+            }
+        }
+
+        Assert.assertFalse(
+                found,
+                "Product '" + productName
+                        + "' was still found in the shopping cart after removal."
+        );
+
+        ExcelReporter.saveResult(
+                id,
+                scenario,
+                expected,
+                "Product '" + productName
+                        + "' was removed successfully from the Shopping Cart.",
+                "PASS"
+        );
+
+    } catch (AssertionError | RuntimeException e) {
+        ExcelReporter.saveResult(
+                id,
+                scenario,
+                expected,
+                e.getMessage(),
+                "FAIL"
+        );
+        throw e;
+    }
+}
     private void loginUsingTestAccount() {
         helper.open(TestConfig.APP_URL);
 
