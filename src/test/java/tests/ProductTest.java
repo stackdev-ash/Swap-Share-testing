@@ -94,7 +94,7 @@ public class ProductTest extends TestBase {
                     By.xpath(".//button[normalize-space()='Add to Cart']"));
 
             Assert.assertFalse(name.isBlank(), "Product name is missing.");
-            Assert.assertTrue(details.contains("â‚¹"), "Product price is missing.");
+            Assert.assertTrue(details.contains("₹"), "Product price is missing.");
             Assert.assertFalse(details.trim().isBlank(), "Product details are missing.");
             Assert.assertTrue(addButton.isDisplayed(), "Add to Cart button is not displayed.");
 
@@ -281,7 +281,7 @@ public void removeProductFromCart() {
 }
     @Test
     public void productInformationIsDisplayed() {
-        String id = "TC-PROD-006";
+        String id = "TC-PROD-005";
         String scenario = "Verify product information is displayed";
         String expected = "Product card should display product name and essential information.";
 
@@ -395,5 +395,3 @@ public void removeProductFromCart() {
         helper.waitForElement(Locators.LOGOUT_BUTTON, 10);
     }
 }
-
-
