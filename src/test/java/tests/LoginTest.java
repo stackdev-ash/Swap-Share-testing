@@ -173,4 +173,110 @@ public class LoginTest extends TestBase {
             throw e;
         }
     }
+
+    @Test
+    public void loginPageElementsAreDisplayed() {
+
+    String testCaseId = "TC-LOGIN-004";
+    String scenario = "Verify login page elements";
+    String expected = "Email, password, remember-me and Sign in controls are displayed.";
+
+    try {
+        helper.open(TestConfig.LOGIN_URL);
+
+        Assert.assertTrue(
+                helper.waitForElement(Locators.EMAIL_INPUT, 10).isDisplayed(),
+                "Email input is not displayed."
+        );
+
+        Assert.assertTrue(
+                helper.waitForElement(Locators.PASSWORD_INPUT, 10).isDisplayed(),
+                "Password input is not displayed."
+        );
+
+        Assert.assertTrue(
+                helper.waitForElement(Locators.REMEMBER_ME, 10).isDisplayed(),
+                "Remember Me checkbox is not displayed."
+        );
+
+        Assert.assertTrue(
+                helper.waitForElement(Locators.SIGN_IN_BUTTON, 10).isDisplayed(),
+                "Sign in button is not displayed."
+        );
+
+        ExcelReporter.saveResult(
+                testCaseId,
+                scenario,
+                expected,
+                "All login page controls are displayed.",
+                "PASS"
+        );
+
+    } catch (AssertionError | RuntimeException e) {
+
+        ExcelReporter.saveResult(
+                testCaseId,
+                scenario,
+                expected,
+                e.getMessage(),
+                "FAIL"
+        );
+
+        throw e;
+    }
+  }
+
+  @Test
+public void invalidLoginDoesNotAuthenticate() {
+
+    String testCaseId = "TC-LOGIN-005";
+    String scenario = "Login with invalid credentials";
+    String expected = "Invalid credentials should not create an authenticated session.";
+
+    try {
+        helper.open(TestConfig.LOGIN_URL);
+
+        helper.type(
+                Locators.EMAIL_INPUT,
+                "invalid@example.com"
+        );
+
+        helper.type(
+                Locators.PASSWORD_INPUT,
+                "wrongpassword"
+        );
+
+        helper.click(Locators.SIGN_IN_BUTTON);
+
+        helper.sleep(2000);
+
+        boolean logoutDisplayed =
+                helper.isDisplayed(Locators.LOGOUT_BUTTON);
+
+        Assert.assertFalse(
+                logoutDisplayed,
+                "User became authenticated with invalid credentials."
+        );
+
+        ExcelReporter.saveResult(
+                testCaseId,
+                scenario,
+                expected,
+                "Invalid credentials did not authenticate the user.",
+                "PASS"
+        );
+
+    } catch (AssertionError | RuntimeException e) {
+
+        ExcelReporter.saveResult(
+                testCaseId,
+                scenario,
+                expected,
+                e.getMessage(),
+                "FAIL"
+        );
+
+        throw e;
+    }
+  }
 }

@@ -120,7 +120,7 @@ public class TestHelper {
     }
 
 
-    private void sleep(long milliseconds) {
+    public void sleep(long milliseconds) {
 
         try {
 
