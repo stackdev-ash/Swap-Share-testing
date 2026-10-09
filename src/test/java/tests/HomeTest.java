@@ -2,8 +2,11 @@ package tests;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import utils.ExcelReporter;
+import utils.Locators;
 import utils.TestBase;
 import utils.TestConfig;
 
@@ -46,4 +49,58 @@ public class HomeTest extends TestBase {
             throw e;
         }
     }
+
+    @Test
+    public void homePageContentIsDisplayed() {
+
+    String testCaseId = "TC-HOME-002";
+    String scenario = "Verify home page content";
+    String expected = "Home page displays main heading, description and Shop Now button.";
+
+    try {
+        helper.open(TestConfig.APP_URL);
+
+        WebElement heading =
+                helper.waitForElement(
+                        By.xpath("//h1[contains(normalize-space(), 'Sustainable Style')]"),
+                        10
+                );
+
+        WebElement description =
+                helper.waitForElement(
+                        By.xpath("//p[contains(normalize-space(), 'Find unique second-hand clothing')]"),
+                        10
+                );
+
+        WebElement shopNow =
+                helper.waitForElement(
+                        Locators.SHOP_NOW_BUTTON,
+                        10
+                );
+
+        Assert.assertTrue(heading.isDisplayed());
+        Assert.assertTrue(description.isDisplayed());
+        Assert.assertTrue(shopNow.isDisplayed());
+
+        ExcelReporter.saveResult(
+                testCaseId,
+                scenario,
+                expected,
+                "Home page content is displayed correctly.",
+                "PASS"
+        );
+
+    } catch (AssertionError | RuntimeException e) {
+
+        ExcelReporter.saveResult(
+                testCaseId,
+                scenario,
+                expected,
+                e.getMessage(),
+                "FAIL"
+        );
+
+        throw e;
+    }
+  }
 }
