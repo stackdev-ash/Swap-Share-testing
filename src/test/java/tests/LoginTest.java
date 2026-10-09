@@ -279,4 +279,61 @@ public void invalidLoginDoesNotAuthenticate() {
         throw e;
     }
   }
+
+  @Test
+  public void rememberMeCheckboxWorks() {
+
+    String testCaseId = "TC-LOGIN-006";
+    String scenario = "Verify Remember Me checkbox";
+    String expected = "Remember Me checkbox can be selected and deselected.";
+
+    try {
+        helper.open(TestConfig.LOGIN_URL);
+
+        WebElement rememberMe =
+                helper.waitForElement(
+                        Locators.REMEMBER_ME,
+                        10
+                );
+
+        Assert.assertFalse(
+                rememberMe.isSelected(),
+                "Remember Me is selected by default."
+        );
+
+        rememberMe.click();
+
+        Assert.assertTrue(
+                rememberMe.isSelected(),
+                "Remember Me checkbox could not be selected."
+        );
+
+        rememberMe.click();
+
+        Assert.assertFalse(
+                rememberMe.isSelected(),
+                "Remember Me checkbox could not be deselected."
+        );
+
+        ExcelReporter.saveResult(
+                testCaseId,
+                scenario,
+                expected,
+                "Remember Me checkbox works correctly.",
+                "PASS"
+        );
+
+    } catch (AssertionError | RuntimeException e) {
+
+        ExcelReporter.saveResult(
+                testCaseId,
+                scenario,
+                expected,
+                e.getMessage(),
+                "FAIL"
+        );
+
+        throw e;
+    }
+  }
 }
