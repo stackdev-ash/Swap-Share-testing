@@ -27,8 +27,10 @@ public class HomeTest extends TestBase {
             String title = helper.getTitle();
 
             Assert.assertEquals(
-                    title,
-                    "Swap&Share");
+        title,
+        "Swap&Share",
+        "Home page title did not match the expected title.");
+
 
             ExcelReporter.saveResult(
                     testCaseId,
