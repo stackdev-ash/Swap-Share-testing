@@ -58,12 +58,6 @@ public class TestHelper {
         element
     );
 
-    try {
-        Thread.sleep(300);
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-    }
-
     element.click();
 }
 
