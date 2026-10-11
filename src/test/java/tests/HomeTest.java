@@ -117,8 +117,7 @@ public class HomeTest extends TestBase {
         helper.open(TestConfig.APP_URL);
 
         helper.click(Locators.SHOP_NOW_BUTTON);
-
-        helper.sleep(1000);
+        helper.waitForElement(Locators.SHOP_HEADING, 10);
 
         Assert.assertEquals(
                 driver.getCurrentUrl(),
