@@ -103,4 +103,46 @@ public class HomeTest extends TestBase {
         throw e;
     }
   }
+
+  @Test
+  public void shopNowNavigatesToShop() {
+
+    String testCaseId = "TC-HOME-003";
+    String scenario = "Verify Shop Now navigation";
+    String expected = "Clicking Shop Now navigates user to the Shop page.";
+
+    try {
+        helper.open(TestConfig.APP_URL);
+
+        helper.click(Locators.SHOP_NOW_BUTTON);
+
+        helper.sleep(1000);
+
+        Assert.assertEquals(
+                driver.getCurrentUrl(),
+                TestConfig.APP_URL + "/shop",
+                "Shop Now did not navigate to Shop page."
+        );
+
+        ExcelReporter.saveResult(
+                testCaseId,
+                scenario,
+                expected,
+                "Shop Now successfully navigated to /shop.",
+                "PASS"
+        );
+
+    } catch (AssertionError | RuntimeException e) {
+
+        ExcelReporter.saveResult(
+                testCaseId,
+                scenario,
+                expected,
+                e.getMessage(),
+                "FAIL"
+        );
+
+        throw e;
+    }
+  }
 }
