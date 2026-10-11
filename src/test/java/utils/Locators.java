@@ -27,7 +27,6 @@ public class Locators {
     // Shop
     public static final By SHOP_HEADING = By.xpath("//h1[normalize-space()='Shop']");
     public static final By PRODUCT_CARDS = By.xpath("//div[.//button[normalize-space()='Add to Cart'] and .//h3]");
-    public static final By PRODUCT_NAMES = By.xpath("//div[.//button[normalize-space()='Add to Cart']]//h3");
     public static final By ADD_TO_CART_BUTTONS = By.xpath("//button[normalize-space()='Add to Cart']");
     public static final By VIEW_CART_BUTTON = By.xpath("//button[normalize-space()='View Cart']");
 
