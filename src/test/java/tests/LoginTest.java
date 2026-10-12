@@ -1,9 +1,11 @@
 package tests;
 
 import java.util.Map;
+import java.time.Duration;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -248,7 +250,8 @@ public void invalidLoginDoesNotAuthenticate() {
 
         helper.click(Locators.SIGN_IN_BUTTON);
 
-        helper.sleep(2000);
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+        .until(d -> !helper.isDisplayed(Locators.LOGOUT_BUTTON));
 
         boolean logoutDisplayed =
                 helper.isDisplayed(Locators.LOGOUT_BUTTON);
