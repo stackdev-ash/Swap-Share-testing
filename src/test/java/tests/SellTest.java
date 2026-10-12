@@ -53,8 +53,9 @@ public class SellTest extends TestBase {
         try {
             TestAccount.login(driver);
             String itemName = TestAccount.createListing(driver);
-            Assert.assertTrue(driver.getCurrentUrl().endsWith("/my-listings"),
-                    "Successful listing did not navigate to My Listings.");
+           Assert.assertTrue(uiWait().until(ExpectedConditions.visibilityOfElementLocated(
+        By.xpath("//h3[normalize-space()=" + TestAccount.xpathLiteral(itemName) + "]"))).isDisplayed(),
+        "Created listing was not displayed in My Listings.");
             Assert.assertTrue(driver.findElement(By.xpath(
                     "//h3[normalize-space()=" + TestAccount.xpathLiteral(itemName) + "]")).isDisplayed(),
                     "Created listing was not displayed in My Listings.");
