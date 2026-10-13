@@ -6,6 +6,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import java.time.Duration;
+
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import utils.ExcelReporter;
 import utils.Locators;
@@ -16,41 +20,74 @@ public class NavigationTest extends TestBase {
 
     @Test
     public void homeToInventory() {
-        String id = "TC-NAV-001";
-        String scenario = "Navigate from Home to Inventory as an authenticated user";
-        String expected = "Authenticated user should reach Inventory and see the Shop heading.";
-        try {
-            loginUsingTestAccount();
-            helper.open(TestConfig.APP_URL);
-            helper.waitForElement(Locators.INVENTORY_LINK, 10);
-            helper.click(Locators.INVENTORY_LINK);
-            helper.waitForElement(Locators.SHOP_HEADING, 10);
-            Assert.assertTrue(driver.getCurrentUrl().endsWith("/shop"), "Inventory did not open /shop.");
-            ExcelReporter.saveResult(id, scenario, expected, "Inventory opened successfully and Shop heading was displayed.", "PASS");
-        } catch (AssertionError | RuntimeException e) {
-            ExcelReporter.saveResult(id, scenario, expected, e.getMessage(), "FAIL");
-            throw e;
-        }
+    String id = "TC-NAV-001";
+    String scenario = "Navigate from Home to Inventory";
+    String expected = "Authenticated user should reach /shop.";
+
+    try {
+        loginUsingTestAccount();
+        helper.open(TestConfig.APP_URL);
+
+        helper.waitForElement(Locators.INVENTORY_LINK, 10);
+        helper.click(Locators.INVENTORY_LINK);
+
+        
+        new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(d -> d.getCurrentUrl().endsWith("/shop"));
+
+        Assert.assertTrue(
+                driver.getCurrentUrl().endsWith("/shop"),
+                "Inventory did not open /shop. Current URL: "
+                        + driver.getCurrentUrl()
+        );
+
+        ExcelReporter.saveResult(
+                id, scenario, expected,
+                "Successfully navigated to /shop.", "PASS"
+        );
+
+    } catch (AssertionError | RuntimeException e) {
+        ExcelReporter.saveResult(
+                id, scenario, expected, e.getMessage(), "FAIL"
+        );
+        throw e;
     }
+   }
 
     @Test
     public void homeShopNowNavigation() {
-        String id = "TC-NAV-002";
-        String scenario = "Navigate to Inventory using Home page Shop Now";
-        String expected = "Shop Now should open the Inventory page for an authenticated user.";
-        try {
-            loginUsingTestAccount();
-            helper.open(TestConfig.APP_URL);
-            helper.waitForElement(Locators.SHOP_NOW_BUTTON, 10);
-            helper.click(Locators.SHOP_NOW_BUTTON);
-            helper.waitForElement(Locators.SHOP_HEADING, 10);
-            Assert.assertTrue(driver.getCurrentUrl().endsWith("/shop"), "Shop Now did not open /shop.");
-            ExcelReporter.saveResult(id, scenario, expected, "Shop Now successfully opened Inventory.", "PASS");
-        } catch (AssertionError | RuntimeException e) {
-            ExcelReporter.saveResult(id, scenario, expected, e.getMessage(), "FAIL");
-            throw e;
-        }
+    String id = "TC-NAV-002";
+    String scenario = "Navigate using Shop Now";
+    String expected = "Shop Now should open /shop.";
+
+    try {
+        loginUsingTestAccount();
+        helper.open(TestConfig.APP_URL);
+
+        helper.waitForElement(Locators.SHOP_NOW_BUTTON, 10);
+        helper.click(Locators.SHOP_NOW_BUTTON);
+
+        new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(d -> d.getCurrentUrl().endsWith("/shop"));
+
+        Assert.assertTrue(
+                driver.getCurrentUrl().endsWith("/shop"),
+                "Shop Now did not open /shop. Current URL: "
+                        + driver.getCurrentUrl()
+        );
+
+        ExcelReporter.saveResult(
+                id, scenario, expected,
+                "Shop Now successfully opened /shop.", "PASS"
+        );
+
+    } catch (AssertionError | RuntimeException e) {
+        ExcelReporter.saveResult(
+                id, scenario, expected, e.getMessage(), "FAIL"
+        );
+        throw e;
     }
+   }
 
     @Test
     public void unauthenticatedSellAccess() {
@@ -62,20 +99,58 @@ public class NavigationTest extends TestBase {
         runProtectedNavigationCase("TC-NAV-004", "Unauthenticated access to Shopping Cart", "Unauthenticated user should be redirected to Login.", Locators.CART_LINK, "Cart access redirected to Login.");
     }
 
-    private void runProtectedNavigationCase(String id, String scenario, String expected, By link, String actual) {
-        try {
-            logoutUsingTestAccount();
-            helper.open(TestConfig.APP_URL);
-            helper.waitForElement(link, 10);
-            helper.click(link);
-            helper.waitForElement(Locators.LOGIN_LINK, 10);
-            Assert.assertTrue(driver.getCurrentUrl().endsWith("/login"), "Protected route did not redirect to /login.");
-            ExcelReporter.saveResult(id, scenario, expected, actual, "PASS");
-        } catch (AssertionError | RuntimeException e) {
-            ExcelReporter.saveResult(id, scenario, expected, e.getMessage(), "FAIL");
-            throw e;
-        }
+    private void runProtectedNavigationCase(
+        String id,
+        String scenario,
+        String expected,
+        By link,
+        String actual) {
+
+    try {
+        
+        logoutUsingTestAccount();
+
+        helper.open(TestConfig.APP_URL);
+
+        helper.waitForElement(link, 10);
+        helper.click(link);
+
+        WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        
+        wait.until(ExpectedConditions.urlContains("/login"));
+
+        
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                Locators.SIGN_IN_BUTTON
+        ));
+
+        Assert.assertTrue(
+                driver.getCurrentUrl().endsWith("/login"),
+                "Protected route did not redirect to /login. Current URL: "
+                        + driver.getCurrentUrl()
+        );
+
+        ExcelReporter.saveResult(
+                id,
+                scenario,
+                expected,
+                actual,
+                "PASS"
+        );
+
+    } catch (AssertionError | RuntimeException e) {
+        ExcelReporter.saveResult(
+                id,
+                scenario,
+                expected,
+                e.getMessage(),
+                "FAIL"
+        );
+        throw e;
     }
+  }
 
     private void loginUsingTestAccount() {
         helper.open(TestConfig.APP_URL);

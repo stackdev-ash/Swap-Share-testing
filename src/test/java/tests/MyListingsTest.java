@@ -1,6 +1,7 @@
 package tests;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 
 import org.openqa.selenium.Alert;
@@ -37,27 +38,81 @@ public class MyListingsTest extends TestBase {
 
     @Test
     public void listingStatusCanBeUpdated() {
-        String id = "TC-LIST-001";
-        String scenario = "Update a listing status";
-        String expected = "Changing listing status updates the displayed status.";
-        try {
-            TestAccount.login(driver);
-            String itemName = TestAccount.createListing(driver);
-            WebElement card = listingCard(itemName);
-            new Select(card.findElement(By.tagName("select"))).selectByValue("reserved");
-            uiWait().until(d -> listingCard(itemName).findElement(By.xpath(
-                    ".//span[normalize-space()='reserved']")).isDisplayed());
-            Assert.assertTrue(listingCard(itemName).findElement(By.xpath(
-                    ".//span[normalize-space()='reserved']")).isDisplayed(),
-                    "Listing status did not change to reserved.");
-            TestAccount.deleteListing(driver, itemName);
-            ExcelReporter.saveResult(id, scenario, expected,
-                    "Listing '" + itemName + "' status changed to reserved; test data cleaned up.", "PASS");
-        } catch (AssertionError | RuntimeException e) {
-            ExcelReporter.saveResult(id, scenario, expected, e.getMessage(), "FAIL");
-            throw e;
-        }
+    String id = "TC-LIST-001";
+    String scenario = "Update a listing status";
+    String expected = "Changing listing status updates the displayed status.";
+
+    try {
+        TestAccount.login(driver);
+
+        String itemName = TestAccount.createListing(driver);
+
+        By headingLocator = By.xpath(
+                "//h3[normalize-space()="
+                        + TestAccount.xpathLiteral(itemName) + "]"
+        );
+
+        WebElement card = listingCard(itemName);
+
+        
+        new Select(card.findElement(By.tagName("select")))
+                .selectByValue("sold");
+
+        
+        uiWait().until(d -> {
+
+            
+            List<WebElement> errors =
+            d.findElements(By.cssSelector("div.text-red-600"));
+
+            if (!errors.isEmpty() && errors.get(0).isDisplayed()) {
+                throw new AssertionError(
+                    "Status update API failed: " + errors.get(0).getText()
+                );
+            }
+
+            List<WebElement> headings =
+                    d.findElements(headingLocator);
+
+            if (headings.isEmpty()) {
+                return false;
+            }
+
+            WebElement updatedCard = headings.get(0).findElement(
+                    By.xpath(
+                            "./ancestor::div[contains(@class,'shadow-md')][1]"
+                    )
+            );
+
+            return updatedCard.findElements(
+                    By.xpath(".//span[normalize-space()='sold']")
+            ).stream().anyMatch(WebElement::isDisplayed);
+        });
+
+        Assert.assertTrue(
+                listingCard(itemName).findElements(
+                        By.xpath(".//span[normalize-space()='sold']")
+                ).stream().anyMatch(WebElement::isDisplayed),
+                "Listing status did not change to sold."
+        );
+
+        TestAccount.deleteListing(driver, itemName);
+
+        ExcelReporter.saveResult(
+                id,
+                scenario,
+                expected,
+                "Listing status changed to sold; test data cleaned up.",
+                "PASS"
+        );
+
+    } catch (AssertionError | RuntimeException e) {
+        ExcelReporter.saveResult(
+                id, scenario, expected, e.getMessage(), "FAIL"
+        );
+        throw e;
     }
+   }
 
     @Test
     public void deleteListingAfterConfirmation() {
@@ -101,7 +156,7 @@ public class MyListingsTest extends TestBase {
                     "Listing disappeared after cancelling deletion.");
             ExcelReporter.saveResult(id, scenario, expected,
                     "Cancelled deletion and listing '" + itemName + "' remained visible.", "PASS");
-            // Clean up the uniquely named test listing after asserting cancel behavior.
+            
             TestAccount.deleteListing(driver, itemName);
         } catch (AssertionError | RuntimeException e) {
             ExcelReporter.saveResult(id, scenario, expected, e.getMessage(), "FAIL");
