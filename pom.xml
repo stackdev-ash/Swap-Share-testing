@@ -45,13 +45,7 @@
     <build>
         <plugins>
 
-            <!-- Run TestNG tests through Maven -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.3</version>
-            </plugin>
-
+            <!-- Run the TestNG suite through Maven Surefire -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
