@@ -77,7 +77,7 @@ const Sell = () => {
 
     return (
         <div className="max-w-2xl mx-auto p-6">
-            <h2 className="text-2xl font-bold mb-6">List Your Item for Sale</h2>
+            <h2 className="text-2xl font-bold mb-6 text-blue-500">List Your Item for Sale</h2>
             
             {error && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
